@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+  <head>
+    <title>My App</title>
+  </head>
+  <body>
+    <% if (notes) { %>
+      <% notes.forEach(function(note) { %>
+        <div><%= note.id %></div>
+        <div><%= note.title %></div>
+        <div><%= note.content %></div>
+        <button onclick="deleteNote('<%= note.id %>')">Delete</button>
+      <% }); %>
+    <% } %>
+
+    <form action="/post" method="post">
+      <input type="text" name="title" placeholder="Title">
+      <textarea name="content" placeholder="Content"></textarea>
+      <button type="submit">Add Note</button>
+    </form>
+  </body>
+</html>
+
+<script>
+  // POST delete
+  function deleteNote(id) {
+    console.log(id);
+    fetch('/delete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert('Failed to delete note');
+      }
+    });
+  }
+</script>
