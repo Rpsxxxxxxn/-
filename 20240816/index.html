@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <title>パスワード自動生成</title>
+</head>
+<body>
+  <h1>パスワード自動生成</h1>
+  <p>長さを選択</p>
+  <input type="radio" name="length" value="8" checked>8文字
+  <input type="radio" name="length" value="16">16文字
+  <input type="radio" name="length" value="32">32文字
+  <p>複雑さを選択</p>
+  <input type="radio" name="complexity" value="1" checked>低
+  <input type="radio" name="complexity" value="2">中
+  <input type="radio" name="complexity" value="3">高
+
+  <p>同じ文字を使用する</p>
+  <input type="checkbox" id="sameCharacter">
+
+  <p>使用される文字</p>
+  <p id="characters"></p>
+
+  <br><br>
+  <button onclick="generatePassword()">パスワード生成</button>
+  <button onclick="copyPassword()">コピー</button>
+
+  <input type="text" id="password" style="width: 300px" readonly>
+</body>
+</html>
+
+<script>
+  // 使用される文字の背景を赤にする
+  // document.getElementById('characters').style.backgroundColor = 'red';
+
+  // 複雑さに応じて使用される文字を変更する
+  document.querySelectorAll('input[name="complexity"]').forEach(function(input) {
+    input.addEventListener('change', function() {
+      const complexity = document.querySelector('input[name="complexity"]:checked').value;
+      const characters = getCharacter(complexity);
+      document.getElementById('characters').textContent = characters;
+    });
+  });
+
+
+  function generatePassword() {
+    const length = document.querySelector('input[name="length"]:checked').value;
+    const complexity = document.querySelector('input[name="complexity"]:checked').value;
+    const sameCharacter = document.getElementById('sameCharacter').checked;
+    let characters = getCharacter(complexity);
+    let password = '';
+
+    for (let i = 0; i < length; i++) {
+      const charIndex = Math.floor(Math.random() * characters.length);
+      password += characters.charAt(charIndex);
+      if (!sameCharacter) {
+        characters = characters.replace(characters.charAt(charIndex), '');
+      }
+    }
+
+    document.getElementById('password').value = password;
+  }
+
+  function getCharacter(complexity) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const specialCharacters = '!@#$%^&*';
+    const hardCharacters = '()_+{}:"<>?\|[];\',./`~';
+
+    switch (complexity) {
+      case '1':
+        return characters;
+      case '2':
+        return characters + specialCharacters;
+      case '3':
+        return characters + specialCharacters + hardCharacters;
+    }
+  }
+
+  function copyPassword() {
+    const password = document.getElementById('password');
+    password.select();
+    document.execCommand('copy');
+    alert('パスワードをコピーしました');
+  }
+</script>
